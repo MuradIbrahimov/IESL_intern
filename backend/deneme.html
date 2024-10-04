@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Age and Gender Data</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          margin: 50px;
+      }
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+
+      table, th, td {
+          border: 1px solid black;
+      }
+
+      th, td {
+          padding: 10px;
+          text-align: left;
+      }
+
+      th {
+          background-color: #f2f2f2;
+      }
+
+      tbody tr:nth-child(even) {
+          background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Age and Gender Data</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="data-table-body">
+          <!-- Data will be inserted here dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      // Function to fetch and display data
+      function fetchData() {
+          // Fetch data from the API
+          fetch('http://localhost:5000/api/age-gender-data')
+              .then(response => response.json())
+              .then(data => {
+                  const tableBody = document.getElementById('data-table-body');
+                  // Clear existing data
+                  tableBody.innerHTML = '';
+
+                  // Loop through data and insert rows
+                  data.forEach(item => {
+                      const row = document.createElement('tr');
+
+                      const idCell = document.createElement('td');
+                      idCell.textContent = item.id;
+
+                      const genderCell = document.createElement('td');
+                      genderCell.textContent = item.gender;
+
+                      const ageCell = document.createElement('td');
+                      ageCell.textContent = item.age;
+
+                      const timestampCell = document.createElement('td');
+                      const date = new Date(item.timestamp);
+                      timestampCell.textContent = date.toLocaleString();
+
+                      row.appendChild(idCell);
+                      row.appendChild(genderCell);
+                      row.appendChild(ageCell);
+                      row.appendChild(timestampCell);
+
+                      tableBody.appendChild(row);
+                  });
+              })
+              .catch(error => {
+                  console.error('Error fetching data:', error);
+              });
+      }
+
+      // Fetch data when the page loads
+      window.onload = fetchData;
+    </script>
+  </body>
+</html>
