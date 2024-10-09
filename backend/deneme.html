@@ -6,37 +6,66 @@
     <title>Age and Gender Data</title>
     <style>
       body {
-          font-family: Arial, sans-serif;
-          margin: 50px;
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 0;
       }
 
       table {
-          width: 100%;
-          border-collapse: collapse;
+        width: 100%;
+        max-width: 800px;
+        margin: 20px auto;
+        border-collapse: collapse;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       }
 
-      table, th, td {
-          border: 1px solid black;
+      table,
+      th,
+      td {
+        border: 1px solid black;
       }
 
-      th, td {
-          padding: 10px;
-          text-align: left;
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
       }
 
       th {
-          background-color: #f2f2f2;
+        background-color: #f2f2f2;
       }
 
       tbody tr:nth-child(even) {
-          background-color: #f9f9f9;
+        background-color: #f9f9f9;
+      }
+
+      .loading {
+        text-align: center;
+        font-size: 1.2em;
+        margin-top: 20px;
+      }
+
+      .error {
+        color: red;
+        text-align: center;
+        font-size: 1.2em;
+        margin-top: 20px;
+      }
+
+      @media screen and (max-width: 600px) {
+        table,
+        th,
+        td {
+          font-size: 0.9em;
+        }
       }
     </style>
   </head>
   <body>
     <div id="app">
-      <h1>Age and Gender Data</h1>
-      <table>
+      <h1 style="text-align: center;">Age and Gender Data</h1>
+      <div class="loading" id="loading">Loading data, please wait...</div>
+      <table style="display: none;" id="data-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -49,47 +78,74 @@
           <!-- Data will be inserted here dynamically -->
         </tbody>
       </table>
+      <div class="error" id="error-message" style="display: none;"></div>
     </div>
 
     <script>
       // Function to fetch and display data
       function fetchData() {
-          // Fetch data from the API
-          fetch('http://localhost:5000/api/age-gender-data')
-              .then(response => response.json())
-              .then(data => {
-                  const tableBody = document.getElementById('data-table-body');
-                  // Clear existing data
-                  tableBody.innerHTML = '';
+        // Fetch data from the API
+        fetch('http://localhost:5000/api/age-gender-data')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            const tableBody = document.getElementById('data-table-body');
+            const loadingMessage = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            const dataTable = document.getElementById('data-table');
 
-                  // Loop through data and insert rows
-                  data.forEach(item => {
-                      const row = document.createElement('tr');
+            // Clear loading message
+            loadingMessage.style.display = 'none';
 
-                      const idCell = document.createElement('td');
-                      idCell.textContent = item.id;
+            // If no data is found
+            if (data.length === 0) {
+              errorMessage.textContent = 'No data found.';
+              errorMessage.style.display = 'block';
+              return;
+            }
 
-                      const genderCell = document.createElement('td');
-                      genderCell.textContent = item.gender;
+            // Show the table
+            dataTable.style.display = 'table';
 
-                      const ageCell = document.createElement('td');
-                      ageCell.textContent = item.age;
+            // Clear existing data
+            tableBody.innerHTML = '';
 
-                      const timestampCell = document.createElement('td');
-                      const date = new Date(item.timestamp);
-                      timestampCell.textContent = date.toLocaleString();
+            // Loop through data and insert rows
+            data.forEach(item => {
+              const row = document.createElement('tr');
 
-                      row.appendChild(idCell);
-                      row.appendChild(genderCell);
-                      row.appendChild(ageCell);
-                      row.appendChild(timestampCell);
+              const idCell = document.createElement('td');
+              idCell.textContent = item.ID; // Use the capitalized "ID"
 
-                      tableBody.appendChild(row);
-                  });
-              })
-              .catch(error => {
-                  console.error('Error fetching data:', error);
-              });
+              const genderCell = document.createElement('td');
+              genderCell.textContent = item.Gender; // Use the capitalized "Gender"
+
+              const ageCell = document.createElement('td');
+              ageCell.textContent = item.Age; // Use the capitalized "Age"
+
+              const timestampCell = document.createElement('td');
+              const date = new Date(item.Timestamp); // Use the capitalized "Timestamp"
+              timestampCell.textContent = date.toLocaleString();
+
+              row.appendChild(idCell);
+              row.appendChild(genderCell);
+              row.appendChild(ageCell);
+              row.appendChild(timestampCell);
+
+              tableBody.appendChild(row);
+            });
+          })
+          .catch(error => {
+            const loadingMessage = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            loadingMessage.style.display = 'none';
+            errorMessage.textContent = 'Error fetching data: ' + error.message;
+            errorMessage.style.display = 'block';
+          });
       }
 
       // Fetch data when the page loads

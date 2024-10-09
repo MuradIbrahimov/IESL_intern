@@ -12,7 +12,7 @@ const db = mysql.createConnection({
   host: "intern.agarmen.com",
   user: "team2",
   password: "123team2",
-  database: "dbTest",
+  database: "TestDb",
   port: 3334,
 });
 
@@ -31,7 +31,7 @@ app.get("/api/age-gender-data", (req, res) => {
     if (err) {
       res.status(500).json({ error: err });
     } else {
-      res.json(results);
+      res.json(results); // Ensure this returns a valid JSON response
     }
   });
 });
