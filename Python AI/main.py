@@ -4,14 +4,14 @@ import serial  # For serial communication
 import mysql.connector  # For MySQL connection
 
 # Initialize serial communication (adjust COM port and baud rate)
-arduino = serial.Serial(port='COM5', baudrate=9600, timeout=1)  # Update 'COM5' with your Arduino port
+arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)  # Update 'COM5' with your Arduino port
 
 # MySQL Connection
 db_connection = mysql.connector.connect(
     host="intern.agarmen.com",  # MySQL host
     user="team2",  # Username
     password="123team2",  # Password
-    database="dbTest",  # Replace with your database name
+    database="dbAgri",  # Replace with your database name
     port=3334  # Adjust the port if necessary
 )
 
